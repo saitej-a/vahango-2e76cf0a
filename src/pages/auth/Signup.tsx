@@ -6,6 +6,19 @@ import { Separator } from "@/components/ui/separator";
 import { Car, User, Mail, Phone, Lock, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { signUp, signInWithGoogle } from "@/lib/auth";
+import { z } from "zod";
+
+const signupSchema = z.object({
+  fullName: z.string().min(2, "Name must be at least 2 characters").max(100, "Name too long"),
+  email: z.string().email("Invalid email address").max(255, "Email too long"),
+  phone: z.string().regex(/^[0-9]{10}$/, "Phone must be 10 digits"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -17,16 +30,49 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
   });
+  const [loading, setLoading] = useState(false);
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords don't match!");
-      return;
+    
+    try {
+      signupSchema.parse(formData);
+      setLoading(true);
+
+      const { data, error } = await signUp(
+        formData.email, 
+        formData.password, 
+        formData.fullName, 
+        formData.phone
+      );
+
+      if (error) throw error;
+
+      if (data.user) {
+        toast.success("Account created successfully!");
+        navigate("/passenger/home");
+      }
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.errors[0].message);
+      } else {
+        toast.error(error.message || "Could not create account");
+      }
+    } finally {
+      setLoading(false);
     }
-    // TODO: Implement Supabase auth
-    toast.success("Account created! Please verify your phone.");
-    navigate("/verify-otp");
+  };
+
+  const handleGoogleSignup = async () => {
+    try {
+      setLoading(true);
+      const { error } = await signInWithGoogle();
+      
+      if (error) throw error;
+    } catch (error: any) {
+      toast.error(error.message);
+      setLoading(false);
+    }
   };
 
   return (
@@ -57,6 +103,7 @@ const Signup = () => {
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   className="pl-10 h-12"
+                  disabled={loading}
                   required
                 />
               </div>
@@ -74,6 +121,7 @@ const Signup = () => {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="pl-10 h-12"
+                  disabled={loading}
                   required
                 />
               </div>
@@ -87,10 +135,11 @@ const Signup = () => {
                 <Input
                   id="phone"
                   type="tel"
-                  placeholder="+91 1234567890"
+                  placeholder="1234567890"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="pl-10 h-12"
+                  disabled={loading}
                   required
                 />
               </div>
@@ -108,6 +157,7 @@ const Signup = () => {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="pl-10 pr-10 h-12"
+                  disabled={loading}
                   required
                 />
                 <button
@@ -132,14 +182,19 @@ const Signup = () => {
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   className="pl-10 h-12"
+                  disabled={loading}
                   required
                 />
               </div>
             </div>
 
             {/* Signup Button */}
-            <Button type="submit" className="w-full h-12 text-lg font-semibold bg-gradient-primary">
-              Create Account
+            <Button 
+              type="submit" 
+              className="w-full h-12 text-lg font-semibold bg-gradient-primary"
+              disabled={loading}
+            >
+              {loading ? "Creating account..." : "Create Account"}
             </Button>
           </form>
 
@@ -155,7 +210,8 @@ const Signup = () => {
             type="button"
             variant="outline"
             className="w-full h-12 font-semibold"
-            onClick={() => toast.info("Google sign-up coming soon!")}
+            onClick={handleGoogleSignup}
+            disabled={loading}
           >
             <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5 mr-2" />
             Continue with Google

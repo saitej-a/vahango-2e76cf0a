@@ -1,1 +1,7 @@
 project_id = "dzqytytnntyblnxpkrks"
+
+[functions.calculate-fare]
+verify_jwt = false
+
+[functions.match-driver]
+verify_jwt = false
