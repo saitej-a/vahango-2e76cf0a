@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
@@ -33,21 +34,21 @@ const App = () => (
           <Route path="/signup" element={<Signup />} />
           <Route path="/verify-otp" element={<VerifyOTP />} />
           
-          {/* Passenger Routes */}
-          <Route path="/passenger/home" element={<PassengerHome />} />
-          <Route path="/passenger/book-ride" element={<PassengerBookRide />} />
-          <Route path="/passenger/trips" element={<PassengerTrips />} />
+          {/* Protected Passenger Routes */}
+          <Route path="/passenger/home" element={<ProtectedRoute><PassengerHome /></ProtectedRoute>} />
+          <Route path="/passenger/book-ride" element={<ProtectedRoute><PassengerBookRide /></ProtectedRoute>} />
+          <Route path="/passenger/trips" element={<ProtectedRoute><PassengerTrips /></ProtectedRoute>} />
           
-          {/* Driver Routes */}
-          <Route path="/driver/home" element={<DriverHome />} />
-          <Route path="/driver/trips" element={<DriverTrips />} />
-          <Route path="/driver/earnings" element={<DriverEarnings />} />
+          {/* Protected Driver Routes */}
+          <Route path="/driver/home" element={<ProtectedRoute><DriverHome /></ProtectedRoute>} />
+          <Route path="/driver/trips" element={<ProtectedRoute><DriverTrips /></ProtectedRoute>} />
+          <Route path="/driver/earnings" element={<ProtectedRoute><DriverEarnings /></ProtectedRoute>} />
           
-          {/* Admin Routes */}
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          {/* Protected Admin Routes */}
+          <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
           
-          {/* Shared Routes */}
-          <Route path="/profile" element={<Profile />} />
+          {/* Protected Shared Routes */}
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>

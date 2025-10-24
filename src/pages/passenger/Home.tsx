@@ -1,10 +1,54 @@
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Home, History, Wallet, Gift, User, Search, MapPin, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getCurrentUser } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
 
 const PassengerHome = () => {
   const navigate = useNavigate();
+  const [userName, setUserName] = useState("User");
+  const [recentTrips, setRecentTrips] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const { user } = await getCurrentUser();
+        if (user) {
+          // Fetch user profile
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("full_name")
+            .eq("id", user.id)
+            .single();
+          
+          if (profile?.full_name) {
+            setUserName(profile.full_name);
+          }
+
+          // Fetch recent trips
+          const { data: trips } = await supabase
+            .from("rides")
+            .select("*")
+            .eq("passenger_id", user.id)
+            .order("created_at", { ascending: false })
+            .limit(2);
+          
+          if (trips) {
+            setRecentTrips(trips);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -13,7 +57,7 @@ const PassengerHome = () => {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h2 className="text-sm opacity-80">Hello,</h2>
-            <h1 className="text-2xl font-bold">Rajesh Kumar</h1>
+            <h1 className="text-2xl font-bold">{userName}</h1>
           </div>
           <Button
             variant="ghost"
@@ -88,28 +132,34 @@ const PassengerHome = () => {
             View All
           </button>
         </div>
-        <Card className="p-4">
-          <div className="flex items-start gap-3 mb-3">
-            <div className="bg-primary/10 p-2 rounded-lg">
-              <Clock className="w-5 h-5 text-primary" />
-            </div>
-            <div className="flex-1">
-              <p className="font-semibold">Koramangala to Indiranagar</p>
-              <p className="text-sm text-muted-foreground">Dec 15, 2024 • 3:30 PM</p>
-            </div>
-            <p className="font-semibold">₹156</p>
-          </div>
-          <div className="flex items-start gap-3">
-            <div className="bg-primary/10 p-2 rounded-lg">
-              <Clock className="w-5 h-5 text-primary" />
-            </div>
-            <div className="flex-1">
-              <p className="font-semibold">MG Road to Whitefield</p>
-              <p className="text-sm text-muted-foreground">Dec 14, 2024 • 9:15 AM</p>
-            </div>
-            <p className="font-semibold">₹284</p>
-          </div>
-        </Card>
+        {loading ? (
+          <Card className="p-4">
+            <p className="text-muted-foreground text-center">Loading trips...</p>
+          </Card>
+        ) : recentTrips.length > 0 ? (
+          <Card className="p-4 space-y-3">
+            {recentTrips.map((trip) => (
+              <div key={trip.id} className="flex items-start gap-3">
+                <div className="bg-primary/10 p-2 rounded-lg">
+                  <Clock className="w-5 h-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold">{trip.pickup_address} to {trip.dropoff_address}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(trip.created_at).toLocaleDateString()} • {new Date(trip.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
+                <p className="font-semibold">₹{trip.final_fare || trip.estimated_fare}</p>
+              </div>
+            ))}
+          </Card>
+        ) : (
+          <Card className="p-8 text-center">
+            <Clock className="w-12 h-12 mx-auto mb-2 text-muted-foreground" />
+            <p className="text-muted-foreground">No trips yet</p>
+            <p className="text-sm text-muted-foreground mt-1">Book your first ride to get started!</p>
+          </Card>
+        )}
       </div>
 
       {/* Bottom Navigation */}
