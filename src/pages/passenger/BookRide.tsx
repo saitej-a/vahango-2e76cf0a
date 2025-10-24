@@ -125,24 +125,8 @@ const BookRide = () => {
 
       toast.success("Ride booked successfully! Finding nearby drivers...");
       
-      // Call match-driver edge function
-      const { data: matchData, error: matchError } = await supabase.functions.invoke(
-        "match-driver",
-        {
-          body: {
-            vehicleType: selectedVehicle,
-            pickupLatitude: pickupLat,
-            pickupLongitude: pickupLng,
-            isShared,
-          },
-        }
-      );
-
-      if (!matchError && matchData?.drivers?.length > 0) {
-        toast.success(`Found ${matchData.drivers.length} available drivers nearby!`);
-      }
-
-      navigate("/passenger/home");
+      // Navigate to driver matching screen
+      navigate("/passenger/matching", { state: { rideId: ride.id } });
     } catch (error: any) {
       console.error("Booking error:", error);
       toast.error(error.message || "Failed to book ride");

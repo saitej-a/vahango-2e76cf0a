@@ -11,6 +11,9 @@ import VerifyOTP from "./pages/auth/VerifyOTP";
 import PassengerHome from "./pages/passenger/Home";
 import PassengerBookRide from "./pages/passenger/BookRide";
 import PassengerTrips from "./pages/passenger/Trips";
+import DriverMatching from "./pages/passenger/DriverMatching";
+import RideActive from "./pages/passenger/RideActive";
+import Rate from "./pages/passenger/Rate";
 import DriverHome from "./pages/driver/Home";
 import DriverTrips from "./pages/driver/Trips";
 import DriverEarnings from "./pages/driver/Earnings";
@@ -38,6 +41,9 @@ const App = () => (
           <Route path="/passenger/home" element={<ProtectedRoute><PassengerHome /></ProtectedRoute>} />
           <Route path="/passenger/book-ride" element={<ProtectedRoute><PassengerBookRide /></ProtectedRoute>} />
           <Route path="/passenger/trips" element={<ProtectedRoute><PassengerTrips /></ProtectedRoute>} />
+          <Route path="/passenger/matching" element={<ProtectedRoute><DriverMatching /></ProtectedRoute>} />
+          <Route path="/passenger/ride-active" element={<ProtectedRoute><RideActive /></ProtectedRoute>} />
+          <Route path="/passenger/rate" element={<ProtectedRoute><Rate /></ProtectedRoute>} />
           
           {/* Protected Driver Routes */}
           <Route path="/driver/home" element={<ProtectedRoute><DriverHome /></ProtectedRoute>} />

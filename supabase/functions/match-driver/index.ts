@@ -51,11 +51,7 @@ serve(async (req) => {
           current_latitude,
           current_longitude,
           rating,
-          total_rides,
-          profiles:profiles!inner (
-            full_name,
-            phone
-          )
+          total_rides
         )
       `)
       .eq('vehicle_type', vehicleType)
@@ -83,6 +79,21 @@ serve(async (req) => {
       availableVehicles = vehicles.filter(v => v.is_shared_enabled);
     }
 
+    // Get driver profiles separately
+    const driverUserIds = availableVehicles
+      .map(v => {
+        const driver = Array.isArray(v.driver) ? v.driver[0] : v.driver;
+        return driver?.user_id;
+      })
+      .filter(Boolean);
+
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, full_name, phone')
+      .in('id', driverUserIds);
+
+    const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
     // Calculate distances and filter by radius
     const driversWithDistance = availableVehicles
       .map(vehicle => {
@@ -91,7 +102,7 @@ serve(async (req) => {
           return null;
         }
 
-        const profiles = Array.isArray(driver.profiles) ? driver.profiles[0] : driver.profiles;
+        const profile = profileMap.get(driver.user_id);
         
         const distance = calculateDistance(
           pickupLatitude,
@@ -106,9 +117,10 @@ serve(async (req) => {
 
         return {
           driverId: driver.id,
+          driverUserId: driver.user_id,
           vehicleId: vehicle.id,
-          driverName: profiles?.full_name || 'Driver',
-          phone: profiles?.phone || '',
+          driverName: profile?.full_name || 'Driver',
+          phone: profile?.phone || '',
           vehicleModel: vehicle.model,
           registrationNumber: vehicle.registration_number,
           rating: driver.rating,
