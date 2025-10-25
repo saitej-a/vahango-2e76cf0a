@@ -47,7 +47,7 @@ const RideActive = () => {
           } else if (updatedRide.status === 'cancelled') {
             toast.error("Ride was cancelled");
             navigate("/passenger/home");
-          } else if (updatedRide.status === 'started') {
+          } else if (updatedRide.status === 'in_progress') {
             toast.success("Ride started!");
           }
         }
@@ -161,7 +161,7 @@ const RideActive = () => {
     switch (ride.status) {
       case 'accepted':
         return 'Driver is on the way';
-      case 'started':
+      case 'in_progress':
         return 'Trip in progress';
       default:
         return 'Processing...';
@@ -172,7 +172,7 @@ const RideActive = () => {
     switch (ride.status) {
       case 'accepted':
         return 'text-yellow-600';
-      case 'started':
+      case 'in_progress':
         return 'text-secondary';
       default:
         return 'text-muted-foreground';

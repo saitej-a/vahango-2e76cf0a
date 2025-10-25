@@ -15,6 +15,8 @@ import DriverMatching from "./pages/passenger/DriverMatching";
 import RideActive from "./pages/passenger/RideActive";
 import Rate from "./pages/passenger/Rate";
 import DriverHome from "./pages/driver/Home";
+import DriverRegister from "./pages/driver/Register";
+import DriverNavigate from "./pages/driver/Navigate";
 import DriverTrips from "./pages/driver/Trips";
 import DriverEarnings from "./pages/driver/Earnings";
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -47,6 +49,8 @@ const App = () => (
           
           {/* Protected Driver Routes */}
           <Route path="/driver/home" element={<ProtectedRoute><DriverHome /></ProtectedRoute>} />
+          <Route path="/driver/register" element={<ProtectedRoute><DriverRegister /></ProtectedRoute>} />
+          <Route path="/driver/navigate" element={<ProtectedRoute><DriverNavigate /></ProtectedRoute>} />
           <Route path="/driver/trips" element={<ProtectedRoute><DriverTrips /></ProtectedRoute>} />
           <Route path="/driver/earnings" element={<ProtectedRoute><DriverEarnings /></ProtectedRoute>} />
           
