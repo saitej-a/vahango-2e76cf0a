@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getCurrentUser } from "@/lib/auth";
+import Map from "@/components/Map";
 
 type VehicleType = "bike" | "auto" | "car";
 
@@ -152,15 +153,20 @@ const BookRide = () => {
         <h1 className="text-xl font-bold">Book a Ride</h1>
       </div>
 
-      {/* Map Placeholder */}
-      <div className="h-64 bg-muted relative">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <MapPin className="w-12 h-12 mx-auto mb-2 text-primary animate-pulse-marker" />
-            <p className="text-muted-foreground">Map will appear here</p>
-            <p className="text-xs text-muted-foreground mt-1">Google Maps integration pending</p>
-          </div>
-        </div>
+      {/* Map */}
+      <div className="h-64">
+        <Map
+          center={{ lat: 12.9716, lng: 77.5946 }}
+          markers={[
+            {
+              position: { lat: 12.9716, lng: 77.5946 },
+              label: "You",
+              icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+            },
+          ]}
+          zoom={13}
+          height="256px"
+        />
       </div>
 
       {/* Booking Form */}

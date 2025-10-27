@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MapPin, Phone, MessageSquare, Star, Navigation, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import Map from "@/components/Map";
 
 const RideActive = () => {
   const navigate = useNavigate();
@@ -181,19 +182,37 @@ const RideActive = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Map Placeholder */}
-      <div className="h-80 bg-muted relative">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <Navigation className="w-12 h-12 mx-auto mb-2 text-primary animate-pulse" />
-            <p className="text-muted-foreground">Live tracking map</p>
-            {driverLocation && (
-              <p className="text-xs text-muted-foreground mt-1">
-                Driver: {driverLocation.lat.toFixed(4)}, {driverLocation.lng.toFixed(4)}
-              </p>
-            )}
-          </div>
-        </div>
+      {/* Map with Live Tracking */}
+      <div className="h-80">
+        <Map
+          center={driverLocation || { lat: ride.pickup_latitude, lng: ride.pickup_longitude }}
+          markers={[
+            {
+              position: { lat: ride.pickup_latitude, lng: ride.pickup_longitude },
+              label: "P",
+              icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+            },
+            {
+              position: { lat: ride.dropoff_latitude, lng: ride.dropoff_longitude },
+              label: "D",
+              icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+            },
+            ...(driverLocation
+              ? [
+                  {
+                    position: driverLocation,
+                    label: "Driver",
+                    icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                  },
+                ]
+              : []),
+          ]}
+          showDirections={ride.status === 'in_progress'}
+          origin={driverLocation || { lat: ride.pickup_latitude, lng: ride.pickup_longitude }}
+          destination={{ lat: ride.dropoff_latitude, lng: ride.dropoff_longitude }}
+          zoom={14}
+          height="320px"
+        />
       </div>
 
       {/* Status Banner */}

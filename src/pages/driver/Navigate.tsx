@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MapPin, Phone, Navigation as NavigationIcon, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
+import Map from "@/components/Map";
 
 const Navigate = () => {
   const navigate = useNavigate();
@@ -97,15 +98,28 @@ const Navigate = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Map Placeholder */}
-      <div className="h-80 bg-muted relative">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <NavigationIcon className="w-12 h-12 mx-auto mb-2 text-primary animate-pulse" />
-            <p className="text-muted-foreground">Navigation map</p>
-            <p className="text-xs text-muted-foreground mt-1">Turn-by-turn directions</p>
-          </div>
-        </div>
+      {/* Navigation Map */}
+      <div className="h-80">
+        <Map
+          center={{ lat: ride.pickup_latitude, lng: ride.pickup_longitude }}
+          showDirections={true}
+          origin={{ lat: ride.pickup_latitude, lng: ride.pickup_longitude }}
+          destination={{ lat: ride.dropoff_latitude, lng: ride.dropoff_longitude }}
+          markers={[
+            {
+              position: { lat: ride.pickup_latitude, lng: ride.pickup_longitude },
+              label: "Pickup",
+              icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+            },
+            {
+              position: { lat: ride.dropoff_latitude, lng: ride.dropoff_longitude },
+              label: "Drop",
+              icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+            },
+          ]}
+          zoom={14}
+          height="320px"
+        />
       </div>
 
       {/* Status Banner */}
