@@ -32,7 +32,7 @@ serve(async (req) => {
       searchRadius = 5 
     } = await req.json() as MatchRequest;
 
-    console.log('Searching for drivers:', { vehicleType, pickupLatitude, pickupLongitude, isShared, searchRadius });
+    console.log('Driver matching request received', { vehicleType, isShared });
 
     // Get online drivers with matching vehicle type
     const { data: vehicles, error: vehicleError } = await supabase
@@ -142,7 +142,7 @@ serve(async (req) => {
       return distanceDiff;
     });
 
-    console.log(`Found ${driversWithDistance.length} available drivers`);
+    console.log('Driver matching completed successfully');
 
     return new Response(
       JSON.stringify({

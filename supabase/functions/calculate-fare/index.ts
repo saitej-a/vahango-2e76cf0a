@@ -26,7 +26,7 @@ serve(async (req) => {
 
     const { vehicleType, distance, duration, isShared, currentTime } = await req.json() as FareRequest;
 
-    console.log('Calculating fare for:', { vehicleType, distance, duration, isShared });
+    console.log('Fare calculation request received', { vehicleType });
 
     // Fetch pricing config
     const { data: pricing, error: pricingError } = await supabase
@@ -93,7 +93,7 @@ serve(async (req) => {
       commissionPercentage: parseFloat(pricing.commission_percentage),
     };
 
-    console.log('Fare calculated:', fareBreakdown);
+    console.log('Fare calculation completed successfully');
 
     return new Response(
       JSON.stringify(fareBreakdown),
