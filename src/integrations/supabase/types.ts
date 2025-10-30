@@ -23,6 +23,7 @@ export type Database = {
           created_at: string
           current_latitude: number | null
           current_longitude: number | null
+          geofence_radius: number | null
           id: string
           is_online: boolean | null
           license_expiry: string
@@ -42,6 +43,7 @@ export type Database = {
           created_at?: string
           current_latitude?: number | null
           current_longitude?: number | null
+          geofence_radius?: number | null
           id?: string
           is_online?: boolean | null
           license_expiry: string
@@ -61,6 +63,7 @@ export type Database = {
           created_at?: string
           current_latitude?: number | null
           current_longitude?: number | null
+          geofence_radius?: number | null
           id?: string
           is_online?: boolean | null
           license_expiry?: string
@@ -480,6 +483,14 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      record_ride_location: {
+        Args: { lat: number; lng: number; ride_id_param: string }
+        Returns: undefined
+      }
+      update_driver_location: {
+        Args: { driver_id_param: string; lat: number; lng: number }
+        Returns: undefined
       }
     }
     Enums: {

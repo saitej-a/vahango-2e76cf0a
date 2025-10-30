@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { MapPin, Phone, Navigation as NavigationIcon, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import Map from "@/components/Map";
+import { useLocationTracking } from "@/hooks/useLocationTracking";
 
 const Navigate = () => {
   const navigate = useNavigate();
@@ -13,6 +14,14 @@ const Navigate = () => {
   const { rideId } = location.state || {};
   const [ride, setRide] = useState<any>(null);
   const [passenger, setPassenger] = useState<any>(null);
+  const [driverId, setDriverId] = useState<string | null>(null);
+
+  // Enable real-time location tracking for driver
+  const { isTracking } = useLocationTracking({
+    driverId: driverId || undefined,
+    rideId: rideId || undefined,
+    enabled: !!driverId && !!rideId && ride?.status !== 'completed',
+  });
 
   useEffect(() => {
     if (!rideId) {
@@ -33,6 +42,11 @@ const Navigate = () => {
 
       if (rideError) throw rideError;
       setRide(rideData);
+      
+      // Set driver ID for location tracking
+      if (rideData.driver_id) {
+        setDriverId(rideData.driver_id);
+      }
 
       const { data: passengerData } = await supabase
         .from('profiles')

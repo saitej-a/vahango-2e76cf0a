@@ -7,6 +7,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MapPin, Phone, MessageSquare, Star, Navigation, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import Map from "@/components/Map";
+import { useDriverLocation } from "@/hooks/useDriverLocation";
+import { useRideStatus } from "@/hooks/useRideStatus";
 
 const RideActive = () => {
   const navigate = useNavigate();
@@ -16,7 +18,14 @@ const RideActive = () => {
   const [driver, setDriver] = useState<any>(null);
   const [vehicle, setVehicle] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
-  const [driverLocation, setDriverLocation] = useState<{ lat: number; lng: number } | null>(null);
+  
+  // Real-time driver location tracking
+  const { location: driverLocation, isTracking } = useDriverLocation(
+    ride?.driver_id || null
+  );
+  
+  // Real-time ride status tracking
+  const { status: rideStatus } = useRideStatus(rideId);
 
   useEffect(() => {
     if (!rideId) {
@@ -27,60 +36,13 @@ const RideActive = () => {
 
     loadRideDetails();
 
-    // Real-time ride updates
-    const rideChannel = supabase
-      .channel(`ride-${rideId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'rides',
-          filter: `id=eq.${rideId}`
-        },
-        (payload) => {
-          const updatedRide = payload.new;
-          setRide(updatedRide);
-          
-          if (updatedRide.status === 'completed') {
-            toast.success("Ride completed!");
-            navigate("/passenger/rate", { state: { rideId } });
-          } else if (updatedRide.status === 'cancelled') {
-            toast.error("Ride was cancelled");
-            navigate("/passenger/home");
-          } else if (updatedRide.status === 'in_progress') {
-            toast.success("Ride started!");
-          }
-        }
-      )
-      .subscribe();
-
-    // Real-time location updates
-    const locationChannel = supabase
-      .channel(`ride-locations-${rideId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'ride_locations',
-          filter: `ride_id=eq.${rideId}`
-        },
-        (payload) => {
-          const location = payload.new;
-          setDriverLocation({
-            lat: location.latitude,
-            lng: location.longitude,
-          });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(rideChannel);
-      supabase.removeChannel(locationChannel);
-    };
-  }, [rideId, navigate]);
+    // Handle ride status changes
+    if (rideStatus === 'completed') {
+      navigate("/passenger/rate", { state: { rideId } });
+    } else if (rideStatus === 'cancelled') {
+      navigate("/passenger/home");
+    }
+  }, [rideId, rideStatus, navigate]);
 
   const loadRideDetails = async () => {
     try {
@@ -109,13 +71,6 @@ const RideActive = () => {
 
       if (driverError) throw driverError;
       setDriver(driverData);
-      
-      if (driverData.current_latitude && driverData.current_longitude) {
-        setDriverLocation({
-          lat: driverData.current_latitude,
-          lng: driverData.current_longitude,
-        });
-      }
 
       // Get driver profile
       const { data: profileData } = await supabase
@@ -217,9 +172,17 @@ const RideActive = () => {
 
       {/* Status Banner */}
       <div className="bg-gradient-primary text-white p-4 text-center">
-        <p className={`text-lg font-semibold ${getStatusColor()}`}>
-          {getStatusText()}
-        </p>
+        <div className="flex items-center justify-center gap-2">
+          <p className="text-lg font-semibold text-white">
+            {getStatusText()}
+          </p>
+          {isTracking && (
+            <span className="flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-secondary opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-secondary"></span>
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Driver Info */}
