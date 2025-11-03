@@ -341,199 +341,290 @@ Uses Supabase Auth built-in endpoints:
 ### Passenger Journey
 
 #### 1. Registration & Onboarding
-```
-Start → Sign Up Screen
-  ↓
-Choose Auth Method (Email/Phone/Google)
-  ↓
-Enter Details (Name, Email/Phone, Password)
-  ↓
-OTP Verification (if phone)
-  ↓
-Profile Setup (Photo, Payment Methods)
-  ↓
-Grant Permissions (Location, Notifications)
-  ↓
-Dashboard
-```
+
+<lov-mermaid>
+graph TD
+    A[Start] --> B[Sign Up Screen]
+    B --> C{Choose Auth Method}
+    C -->|Email/Password| D[Enter Details]
+    C -->|Phone| E[Enter Phone Number]
+    C -->|Google| F[Google OAuth]
+    D --> G[OTP Verification]
+    E --> G
+    F --> H[Profile Setup]
+    G --> H
+    H --> I[Upload Photo]
+    I --> J[Add Payment Methods]
+    J --> K[Grant Permissions]
+    K --> L[Location Permission]
+    K --> M[Notification Permission]
+    L --> N[Dashboard]
+    M --> N
+</lov-mermaid>
 
 #### 2. Booking a Ride
-```
-Dashboard → Tap "Where to?"
-  ↓
-Enter Destination (Autocomplete)
-  ↓
-Adjust Pickup Location (Map Pin)
-  ↓
-Select Vehicle Type (Bike/Auto/Car)
-  ↓
-Choose Shared/Private
-  ↓
-Review Fare Estimate
-  ↓
-Confirm Booking
-  ↓
-Driver Matching (Loading State)
-  ↓
-Driver Found (Display Driver Info)
-  ↓
-Track Driver Arrival
-```
+
+<lov-mermaid>
+graph TD
+    A[Dashboard] --> B[Tap Where to?]
+    B --> C[Enter Destination]
+    C --> D[Autocomplete Suggestions]
+    D --> E[Adjust Pickup Location]
+    E --> F[Select Vehicle Type]
+    F --> G{Vehicle Choice}
+    G -->|Bike| H[Bike Options]
+    G -->|Auto| I[Auto Options]
+    G -->|Car| J[Car Options]
+    H --> K{Shared or Private?}
+    I --> K
+    J --> K
+    K -->|Shared| L[Shared Ride]
+    K -->|Private| M[Private Ride]
+    L --> N[Review Fare Estimate]
+    M --> N
+    N --> O[Add Special Instructions]
+    O --> P[Confirm Booking]
+    P --> Q[Driver Matching]
+    Q --> R{Driver Found?}
+    R -->|Yes| S[Display Driver Info]
+    R -->|No| T[Retry or Cancel]
+    S --> U[Track Driver Arrival]
+</lov-mermaid>
 
 #### 3. During the Ride
-```
-Driver Arrives → Notification
-  ↓
-Board Vehicle
-  ↓
-Driver Starts Trip
-  ↓
-Live Tracking (Map + ETA)
-  ↓
-Arrive at Destination
-  ↓
-Driver Ends Trip
-```
+
+<lov-mermaid>
+graph TD
+    A[Track Driver Arrival] --> B{Driver Arrived?}
+    B -->|Yes| C[Notification Sent]
+    B -->|No| D[Continue Tracking]
+    D --> A
+    C --> E[Board Vehicle]
+    E --> F[Driver Starts Trip]
+    F --> G[Live Tracking Active]
+    G --> H[View Map & ETA]
+    H --> I[Monitor Route Progress]
+    I --> J{Arrived at Destination?}
+    J -->|No| I
+    J -->|Yes| K[Driver Ends Trip]
+    K --> L[Calculate Final Fare]
+</lov-mermaid>
 
 #### 4. Post-Ride
-```
-Trip Complete → Fare Calculation
-  ↓
-Payment Processing (Auto)
-  ↓
-Rate Driver (1-5 Stars)
-  ↓
-Provide Feedback (Optional)
-  ↓
-Receipt Generated
-  ↓
-Dashboard / Book Another Ride
-```
+
+<lov-mermaid>
+graph TD
+    A[Trip Complete] --> B[Fare Calculation]
+    B --> C{Payment Method}
+    C -->|Digital| D[Auto Payment Processing]
+    C -->|Cash| E[Confirm Cash Payment]
+    D --> F[Payment Success]
+    E --> F
+    F --> G[Rate Driver Screen]
+    G --> H[Select Star Rating 1-5]
+    H --> I[Select Feedback Categories]
+    I --> J[Add Comment Optional]
+    J --> K[Submit Rating]
+    K --> L[Receipt Generated]
+    L --> M{Next Action}
+    M -->|Book Another| N[Return to Dashboard]
+    M -->|View Receipt| O[Download Invoice]
+    M -->|Exit| N
+</lov-mermaid>
 
 ### Driver Journey
 
 #### 1. Registration & Verification
-```
-Start → Driver Sign Up
-  ↓
-Personal Information
-  ↓
-Upload Documents
-  ├─ License (Front/Back)
-  ├─ Aadhar Card
-  ├─ Vehicle Registration
-  └─ Insurance
-  ↓
-Vehicle Information
-  ↓
-Bank Account Details
-  ↓
-Submit for Verification
-  ↓
-Background Check (Pending)
-  ↓
-Approval Notification
-  ↓
-Driver Dashboard
-```
+
+<lov-mermaid>
+graph TD
+    A[Start] --> B[Driver Sign Up]
+    B --> C[Enter Personal Information]
+    C --> D[Upload Documents]
+    D --> E[Driver License Front]
+    D --> F[Driver License Back]
+    D --> G[Aadhar Card]
+    D --> H[Vehicle Registration]
+    D --> I[Insurance Documents]
+    E --> J[Enter Vehicle Information]
+    F --> J
+    G --> J
+    H --> J
+    I --> J
+    J --> K[Vehicle Type Selection]
+    K --> L[Vehicle Model & Details]
+    L --> M[Bank Account Details]
+    M --> N[Submit for Verification]
+    N --> O[Background Check Pending]
+    O --> P{Verification Status}
+    P -->|Approved| Q[Approval Notification]
+    P -->|Rejected| R[Rejection with Reasons]
+    P -->|Pending| S[Wait for Review]
+    Q --> T[Driver Dashboard]
+    R --> U[Re-submit Documents]
+    U --> N
+</lov-mermaid>
 
 #### 2. Going Online & Receiving Rides
-```
-Driver Dashboard → Toggle Online
-  ↓
-Set Vehicle Availability
-  ↓
-Wait for Ride Request
-  ↓
-Ride Request Notification
-  ├─ Passenger Details
-  ├─ Pickup Location
-  ├─ Fare Amount
-  └─ Passenger Rating
-  ↓
-Accept/Decline (Countdown Timer)
-  ↓
-Navigate to Pickup (GPS)
-```
+
+<lov-mermaid>
+graph TD
+    A[Driver Dashboard] --> B[Toggle Online Status]
+    B --> C{Status}
+    C -->|Online| D[Set Vehicle Availability]
+    C -->|Offline| E[Rest Mode]
+    D --> F[GPS Location Tracking]
+    F --> G[Wait for Ride Request]
+    G --> H{Request Received}
+    H -->|Yes| I[Ride Request Notification]
+    H -->|No| G
+    I --> J[View Passenger Details]
+    J --> K[View Pickup Location]
+    K --> L[View Fare Amount]
+    L --> M[View Passenger Rating]
+    M --> N{Accept or Decline}
+    N -->|Accept| O[Start Navigation to Pickup]
+    N -->|Decline| G
+    N -->|Timeout| P[Auto-Decline]
+    P --> G
+</lov-mermaid>
 
 #### 3. Completing Rides
-```
-Arrive at Pickup → Notify Passenger
-  ↓
-Passenger Boards
-  ↓
-Start Trip (Button)
-  ↓
-Follow GPS Navigation
-  ↓
-Arrive at Destination
-  ↓
-End Trip (Button)
-  ↓
-Fare Auto-Calculated
-  ↓
-Collect Payment (Cash) or Confirm Digital
-  ↓
-Rate Passenger
-  ↓
-Available for Next Ride
-```
+
+<lov-mermaid>
+graph TD
+    A[Navigate to Pickup] --> B{Arrived at Pickup?}
+    B -->|Yes| C[Notify Passenger]
+    B -->|No| D[Continue Navigation]
+    D --> A
+    C --> E{Passenger Boards}
+    E -->|Yes| F[Tap Start Trip]
+    E -->|No Wait| G[Contact Passenger]
+    G --> H{Passenger Responds}
+    H -->|Yes| E
+    H -->|No Timeout| I[Cancel Ride]
+    F --> J[Follow GPS Navigation]
+    J --> K[Real-time Location Updates]
+    K --> L{Arrived at Destination?}
+    L -->|No| K
+    L -->|Yes| M[Tap End Trip]
+    M --> N[Fare Auto-Calculated]
+    N --> O{Payment Method}
+    O -->|Cash| P[Collect Cash Payment]
+    O -->|Digital| Q[Payment Auto-Processed]
+    P --> R[Confirm Cash Received]
+    Q --> R
+    R --> S[Rate Passenger]
+    S --> T[Update Earnings]
+    T --> U[Go Online for Next Ride]
+</lov-mermaid>
 
 #### 4. Managing Earnings
-```
-Earnings Dashboard
-  ├─ Today's Earnings
-  ├─ Weekly Earnings
-  ├─ Monthly Earnings
-  └─ Surge/Bonus Breakdown
-  ↓
-View Trip History
-  ↓
-Download Statements
-  ↓
-Manage Payout Settings
-  ↓
-Request Payout
-```
+
+<lov-mermaid>
+graph TD
+    A[Earnings Dashboard] --> B[View Today's Earnings]
+    A --> C[View Weekly Earnings]
+    A --> D[View Monthly Earnings]
+    A --> E[Surge/Bonus Breakdown]
+    B --> F[View Trip History]
+    C --> F
+    D --> F
+    E --> F
+    F --> G[Select Trip Details]
+    G --> H[Download Trip Invoice]
+    F --> I[Download Statements]
+    I --> J[Tax Documents]
+    I --> K[Earning Reports]
+    F --> L[Manage Payout Settings]
+    L --> M[Update Bank Details]
+    L --> N[Set Payout Frequency]
+    M --> O[Request Payout]
+    N --> O
+    O --> P{Minimum Balance Met?}
+    P -->|Yes| Q[Initiate Payout]
+    P -->|No| R[Wait for Minimum Balance]
+    Q --> S[Payout Processing]
+    S --> T[Payment Received]
+</lov-mermaid>
 
 ### Admin Operations Flow
 
 #### 1. Daily Operations
-```
-Admin Login → Dashboard Overview
-  ├─ Active Rides (Real-time Map)
-  ├─ Total Users
-  ├─ Revenue Today
-  └─ System Alerts
-  ↓
-Monitor Live Rides
-  ↓
-Adjust Surge Pricing
-  ↓
-Review Support Tickets
-  ↓
-Verify New Drivers
-```
+
+<lov-mermaid>
+graph TD
+    A[Admin Login] --> B[Dashboard Overview]
+    B --> C[View Active Rides Map]
+    B --> D[Total Users Count]
+    B --> E[Revenue Today]
+    B --> F[System Alerts]
+    C --> G[Monitor Live Rides]
+    G --> H[Track Driver Locations]
+    G --> I[Monitor Ride Status]
+    H --> J{Issue Detected?}
+    I --> J
+    J -->|Yes| K[Investigate Issue]
+    J -->|No| L[Continue Monitoring]
+    K --> M[Contact Driver/Passenger]
+    F --> N[Review System Alerts]
+    N --> O[Adjust Surge Pricing]
+    O --> P[Set Multiplier by Zone]
+    P --> Q[Apply Time-based Rules]
+    B --> R[Review Support Tickets]
+    R --> S[Prioritize by Urgency]
+    S --> T[Resolve Complaints]
+    T --> U[Update Ticket Status]
+    B --> V[Verify New Drivers]
+    V --> W[Review Documents]
+    W --> X{Documents Valid?}
+    X -->|Yes| Y[Approve Driver]
+    X -->|No| Z[Reject with Feedback]
+</lov-mermaid>
 
 #### 2. System Management
-```
-Analytics Dashboard
-  ├─ User Engagement Metrics
-  ├─ Ride Completion Rates
-  ├─ Driver Performance
-  └─ Revenue Trends
-  ↓
-Adjust Pricing Config
-  ↓
-Manage User Accounts
-  ├─ Suspend
-  ├─ Ban
-  └─ Verify
-  ↓
-Configure Promotions
-  ↓
-System Settings
-```
+
+<lov-mermaid>
+graph TD
+    A[Analytics Dashboard] --> B[User Engagement Metrics]
+    A --> C[Ride Completion Rates]
+    A --> D[Driver Performance]
+    A --> E[Revenue Trends]
+    B --> F[Daily Active Users]
+    B --> G[New Registrations]
+    C --> H[Success Rate %]
+    C --> I[Cancellation Analysis]
+    D --> J[Top Performers]
+    D --> K[Low Rating Drivers]
+    E --> L[Revenue by Vehicle Type]
+    E --> M[Commission Earnings]
+    F --> N[Adjust Pricing Config]
+    G --> N
+    H --> N
+    I --> N
+    N --> O[Set Base Fares]
+    N --> P[Configure Surge Rules]
+    N --> Q[Update Commission %]
+    A --> R[Manage User Accounts]
+    R --> S{Action Required}
+    S -->|Suspend| T[Temporary Suspension]
+    S -->|Ban| U[Permanent Ban]
+    S -->|Verify| V[Approve Account]
+    T --> W[Send Notification]
+    U --> W
+    V --> W
+    A --> X[Configure Promotions]
+    X --> Y[Create Promo Codes]
+    X --> Z[Set Discount Rules]
+    X --> AA[Define Validity Period]
+    Y --> AB[Launch Campaign]
+    Z --> AB
+    AA --> AB
+    A --> AC[System Settings]
+    AC --> AD[Update App Config]
+    AC --> AE[Manage Integrations]
+    AC --> AF[Security Settings]
+</lov-mermaid>
 
 ---
 
