@@ -342,7 +342,7 @@ Uses Supabase Auth built-in endpoints:
 
 #### 1. Registration & Onboarding
 
-<lov-mermaid>
+```
 graph TD
     A[Start] --> B[Sign Up Screen]
     B --> C{Choose Auth Method}
@@ -360,7 +360,7 @@ graph TD
     K --> M[Notification Permission]
     L --> N[Dashboard]
     M --> N
-</lov-mermaid>
+```
 
 #### 2. Booking a Ride
 
