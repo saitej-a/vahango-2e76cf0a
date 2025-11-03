@@ -364,7 +364,7 @@ graph TD
 
 #### 2. Booking a Ride
 
-<lov-mermaid>
+```mermaid
 graph TD
     A[Dashboard] --> B[Tap Where to?]
     B --> C[Enter Destination]
@@ -389,11 +389,11 @@ graph TD
     R -->|Yes| S[Display Driver Info]
     R -->|No| T[Retry or Cancel]
     S --> U[Track Driver Arrival]
-</lov-mermaid>
+```
 
 #### 3. During the Ride
 
-<lov-mermaid>
+```mermaid
 graph TD
     A[Track Driver Arrival] --> B{Driver Arrived?}
     B -->|Yes| C[Notification Sent]
@@ -408,11 +408,11 @@ graph TD
     J -->|No| I
     J -->|Yes| K[Driver Ends Trip]
     K --> L[Calculate Final Fare]
-</lov-mermaid>
+```
 
 #### 4. Post-Ride
 
-<lov-mermaid>
+```mermaid
 graph TD
     A[Trip Complete] --> B[Fare Calculation]
     B --> C{Payment Method}
@@ -430,13 +430,13 @@ graph TD
     M -->|Book Another| N[Return to Dashboard]
     M -->|View Receipt| O[Download Invoice]
     M -->|Exit| N
-</lov-mermaid>
+```
 
 ### Driver Journey
 
 #### 1. Registration & Verification
 
-<lov-mermaid>
+```mermaid
 graph TD
     A[Start] --> B[Driver Sign Up]
     B --> C[Enter Personal Information]
@@ -463,11 +463,11 @@ graph TD
     Q --> T[Driver Dashboard]
     R --> U[Re-submit Documents]
     U --> N
-</lov-mermaid>
+```
 
 #### 2. Going Online & Receiving Rides
 
-<lov-mermaid>
+```mermaid
 graph TD
     A[Driver Dashboard] --> B[Toggle Online Status]
     B --> C{Status}
@@ -487,11 +487,10 @@ graph TD
     N -->|Decline| G
     N -->|Timeout| P[Auto-Decline]
     P --> G
-</lov-mermaid>
-
+```
 #### 3. Completing Rides
 
-<lov-mermaid>
+```mermaid
 graph TD
     A[Navigate to Pickup] --> B{Arrived at Pickup?}
     B -->|Yes| C[Notify Passenger]
@@ -517,11 +516,11 @@ graph TD
     R --> S[Rate Passenger]
     S --> T[Update Earnings]
     T --> U[Go Online for Next Ride]
-</lov-mermaid>
+```
 
 #### 4. Managing Earnings
 
-<lov-mermaid>
+```mermaid
 graph TD
     A[Earnings Dashboard] --> B[View Today's Earnings]
     A --> C[View Weekly Earnings]
@@ -546,13 +545,13 @@ graph TD
     P -->|No| R[Wait for Minimum Balance]
     Q --> S[Payout Processing]
     S --> T[Payment Received]
-</lov-mermaid>
+```
 
 ### Admin Operations Flow
 
 #### 1. Daily Operations
 
-<lov-mermaid>
+```mermaid
 graph TD
     A[Admin Login] --> B[Dashboard Overview]
     B --> C[View Active Rides Map]
@@ -580,11 +579,11 @@ graph TD
     W --> X{Documents Valid?}
     X -->|Yes| Y[Approve Driver]
     X -->|No| Z[Reject with Feedback]
-</lov-mermaid>
+```
 
 #### 2. System Management
 
-<lov-mermaid>
+```mermaid
 graph TD
     A[Analytics Dashboard] --> B[User Engagement Metrics]
     A --> C[Ride Completion Rates]
@@ -624,7 +623,7 @@ graph TD
     AC --> AD[Update App Config]
     AC --> AE[Manage Integrations]
     AC --> AF[Security Settings]
-</lov-mermaid>
+```
 
 ---
 
