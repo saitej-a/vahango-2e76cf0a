@@ -4,32 +4,10 @@
 
 **VahanGo** is a comprehensive multi-vehicle ride-hailing Progressive Web App (PWA) that connects passengers with drivers across three vehicle categories: bikes, autos, and cars. The platform offers real-time ride booking, dynamic fare calculation, live tracking, and flexible ride-sharing options to provide affordable and convenient transportation solutions.
 
-**Project URL**: https://lovable.dev/projects/2744765c-6df2-4f4f-9ba5-6a3ade289d15
-
-The app targets urban commuters seeking quick, reliable transportation options while providing drivers with a flexible income opportunity. VahanGo addresses the growing need for on-demand mobility by offering multiple vehicle types with transparent pricing, real-time tracking, and seamless payment integration.
 
 ---
 
 ## System Architecture
-
-### Technology Stack
-
-- **Frontend Framework:** React 18.3+ with TypeScript
-- **Build Tool:** Vite
-- **Styling:** Tailwind CSS with custom design system
-- **UI Components:** shadcn/ui (Radix UI primitives)
-- **Backend:** Supabase (BaaS)
-  - Authentication: Supabase Auth with JWT tokens
-  - Database: PostgreSQL with Row Level Security (RLS)
-  - Real-time: Supabase Realtime channels
-  - Storage: Supabase Storage
-  - Edge Functions: Deno runtime
-- **Maps & Location:** Google Maps API (@react-google-maps/api)
-- **Payment Integration:** Razorpay (planned)
-- **Push Notifications:** Firebase Cloud Messaging (planned)
-- **State Management:** React Query (@tanstack/react-query)
-- **Form Handling:** React Hook Form with Zod validation
-- **Routing:** React Router v6
 
 ### Architecture Overview
 
