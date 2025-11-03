@@ -342,7 +342,7 @@ Uses Supabase Auth built-in endpoints:
 
 #### 1. Registration & Onboarding
 
-```
+```mermaid
 graph TD
     A[Start] --> B[Sign Up Screen]
     B --> C{Choose Auth Method}
