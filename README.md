@@ -8,8 +8,85 @@ b# VahanGo - Multi-Vehicle Ride-Hailing Platform
 ---
 
 ## Database Schema
-```python
-continue
+```mermaid
+graph TD
+    %% ============================
+    %% USER ENTRY POINT
+    %% ============================
+    U[👤 User] --> LB1[🌐 External Load Balancer]
+    LB1 --> APIGW[🚪 API Gateway]
+    APIGW --> LB2[⚖️ Internal Load Balancer]
+
+    %% ============================
+    %% SERVICES LAYER
+    %% ============================
+    LB2 --> US[🧩 User Service]
+    LB2 --> RS[🚗 Ride Service]
+    LB2 --> PS[💳 Payment Service]
+    LB2 --> AS[📊 Analytics Service]
+
+    %% ============================
+    %% DATABASES
+    %% ============================
+    US --> PSQL1[(🗄️ PostgreSQL - User DB)]
+    RS --> PSQL2[(🗄️ PostgreSQL - Ride DB)]
+    PS --> PSQL3[(🗄️ PostgreSQL - Payment DB)]
+    AS --> PSQL4[(🗄️ PostgreSQL - Analytics DB)]
+
+    %% ============================
+    %% CACHE & REALTIME
+    %% ============================
+    RS --> REDIS[(⚡ Redis Cache)]
+    US --> REDIS
+    PS --> REDIS
+
+    %% ============================
+    %% MESSAGE & TASK BROKERS
+    %% ============================
+    RS --> MB[📬 Message Broker (Kafka/RabbitMQ)]
+    PS --> MB
+    MB --> AS
+    MB --> CELERY[⚙️ Celery Task Workers]
+    CELERY --> REDIS
+
+    %% ============================
+    %% MONITORING & LOGGING
+    %% ============================
+    subgraph OBS["🧠 Observability"]
+        MON[📈 Prometheus + Grafana (Monitoring)]
+        LOG[📜 ELK / OpenSearch Stack (Logging)]
+        TRACE[🔍 OpenTelemetry / Jaeger (Tracing)]
+    end
+    US --> OBS
+    RS --> OBS
+    PS --> OBS
+    AS --> OBS
+
+    %% ============================
+    %% SECURITY
+    %% ============================
+    subgraph SEC["🔐 Security Layer"]
+        JWT[🔑 JWT / OAuth2 Auth]
+        TLS[🧱 mTLS / SSL Encryption]
+        VAULT[🧰 Secrets Manager (Vault/AWS SM)]
+    end
+    APIGW --> SEC
+    US --> SEC
+    RS --> SEC
+    PS --> SEC
+
+    %% ============================
+    %% DEPLOYMENT & INFRA
+    %% ============================
+    subgraph DEPLOY["☁️ Deployment Layer"]
+        DOCKER[🐳 Docker Containers]
+        K8S[🧭 Kubernetes Pods + Ingress]
+        HPA[📊 Auto Scaling (HPA)]
+    end
+    DEPLOY --> US
+    DEPLOY --> RS
+    DEPLOY --> PS
+    DEPLOY --> AS
 ```
 ### Entity Relationship Diagram
 
