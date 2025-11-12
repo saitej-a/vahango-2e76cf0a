@@ -1,4 +1,4 @@
-# VahanGo - Multi-Vehicle Ride-Hailing Platform
+b# VahanGo - Multi-Vehicle Ride-Hailing Platform
 
 ## Project Overview
 
@@ -27,19 +27,22 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
+
     DRIVERS {
         uuid id PK
         uuid user_id FK
-        boolean "is_verified"
-        boolean "is_active"
+        boolean is_verified
+        boolean is_active
         int total_rides
         float rating
         uuid active_vehicle_id FK
     }
+
     RIDERS {
         uuid id PK
         uuid user_id FK
     }
+
     DRIVER_LOCATION {
         uuid id PK
         uuid driver_id FK
@@ -47,6 +50,7 @@ erDiagram
         float longitude
         timestamp updated_at
     }
+
     RIDER_LOCATION {
         uuid id PK
         uuid rider_id FK
@@ -54,17 +58,19 @@ erDiagram
         float longitude
         timestamp updated_at
     }
+
     VEHICLES {
         uuid id PK
         uuid driver_id FK
-        varchar type
+        enum type
         varchar model
         varchar reg_num UNIQUE
         int capacity
         varchar color
-        int year
-        boolean "is_active"
-    }
+        int year int
+        boolean isActive
+        }
+
     RIDE_REQUESTS {
         uuid id PK
         uuid rider_id FK
@@ -72,12 +78,13 @@ erDiagram
         float src_lng
         float dest_lat
         float dest_lng
-        boolean "is_shared"
+        boolean is_shared
         float surge_mult
         varchar status
         timestamp requested_at
         timestamp cancelled_at
     }
+
     RIDES {
         uuid id PK
         uuid ride_request_id FK
@@ -91,12 +98,14 @@ erDiagram
         timestamp completed_at
         timestamp cancelled_at
     }
+
     WALLET {
         uuid id PK
         uuid user_id FK
         float balance
         timestamp updated_at
     }
+
     TRANSACTIONS {
         uuid id PK
         uuid user_id FK
@@ -108,6 +117,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
+
     RATINGS {
         uuid id PK
         uuid ride_id FK
