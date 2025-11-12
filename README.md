@@ -7,295 +7,146 @@
 
 ---
 
-## System Architecture
-
 ## Database Schema
-
+```python
+continue
+```
 ### Entity Relationship Diagram
 
-```
-┌──────────────┐         ┌──────────────┐         ┌──────────────┐
-│   profiles   │         │  user_roles  │         │   drivers    │
-├──────────────┤         ├──────────────┤         ├──────────────┤
-│ id (PK)      │────┐    │ id (PK)      │    ┌────│ id (PK)      │
-│ full_name    │    │    │ user_id (FK) │    │    │ user_id (FK) │
-│ phone        │    │    │ role (enum)  │    │    │ license_no   │
-│ email        │    │    └──────────────┘    │    │ rating       │
-│ avatar_url   │    │                        │    │ total_rides  │
-└──────────────┘    │                        │    │ is_online    │
-                    │                        │    │ current_lat  │
-                    └────────────────────────┘    │ current_lon  │
-                                                  │ status       │
-                                                  └──────────────┘
-                                                         │
-                                                         │
-                    ┌────────────────────────────────────┘
-                    │
-                    ▼
-           ┌──────────────┐
-           │   vehicles   │
-           ├──────────────┤
-           │ id (PK)      │
-           │ driver_id(FK)│───┐
-           │ vehicle_type │   │
-           │ model        │   │
-           │ capacity     │   │
-           │ reg_number   │   │
-           │ is_shared    │   │
-           └──────────────┘   │
-                              │
-        ┌─────────────────────┴─────────────────────┐
-        │                                           │
-        ▼                                           ▼
-┌──────────────┐                            ┌──────────────┐
-│    rides     │                            │   ratings    │
-├──────────────┤                            ├──────────────┤
-│ id (PK)      │                            │ id (PK)      │
-│ passenger_id │                            │ ride_id (FK) │
-│ driver_id(FK)│────────────────────────────│ rated_by(FK) │
-│ vehicle_id   │                            │ rated_user   │
-│ pickup_lat   │                            │ rating       │
-│ pickup_lon   │                            │ comment      │
-│ dropoff_lat  │                            │ categories   │
-│ dropoff_lon  │                            └──────────────┘
-│ vehicle_type │
-│ status       │                     ┌──────────────────┐
-│ final_fare   │                     │  ride_locations  │
-│ surge_mult   │                     ├──────────────────┤
-└──────────────┘                     │ id (PK)          │
-        │                            │ ride_id (FK)     │
-        │                            │ latitude         │
-        └────────────────────────────│ longitude        │
-                                     │ recorded_at      │
-        ┌────────────────────────────└──────────────────┘
-        │
-        ▼
-┌──────────────┐              ┌──────────────────┐
-│ transactions │              │  pricing_config  │
-├──────────────┤              ├──────────────────┤
-│ id (PK)      │              │ id (PK)          │
-│ ride_id (FK) │              │ vehicle_type     │
-│ user_id (FK) │              │ base_fare        │
-│ amount       │              │ per_km_rate      │
-│ payment_meth │              │ per_minute_rate  │
-│ status       │              │ minimum_fare     │
-│ tip_amount   │              │ surge_peak       │
-│ commission   │              │ surge_night      │
-└──────────────┘              │ commission_%     │
-                              └──────────────────┘
-```
-
-### Tables Description
-
-#### **profiles**
-Stores user profile information for all users (passengers, drivers, admins).
-- **PK:** `id` (UUID, references auth.users)
-- **Fields:** full_name, phone, email, avatar_url
-- **RLS:** Users can view/update own profile only
-
-#### **user_roles**
-Maps users to their roles (passenger, driver, admin).
-- **PK:** `id` (UUID)
-- **FK:** `user_id` → profiles.id
-- **Fields:** role (enum: 'passenger', 'driver', 'admin')
-- **RLS:** Users can view own roles only
-
-#### **drivers**
-Driver-specific information and status.
-- **PK:** `id` (UUID)
-- **FK:** `user_id` → profiles.id
-- **Fields:** license_number, license_expiry, rating, total_rides, is_online, current_latitude, current_longitude, status, aadhar_number, bank_account, bank_ifsc
-- **RLS:** Drivers view/update own info; Passengers view online drivers only
-
-#### **vehicles**
-Vehicle registration and details.
-- **PK:** `id` (UUID)
-- **FK:** `driver_id` → drivers.id
-- **Fields:** vehicle_type (enum: 'bike', 'auto', 'car'), model, registration_number, capacity, is_shared_enabled, is_active, insurance_expiry, year, color
-- **RLS:** Drivers manage own vehicles; Passengers view active vehicles
-
-#### **rides**
-Core ride booking and tracking information.
-- **PK:** `id` (UUID)
-- **FK:** `passenger_id` → profiles.id, `driver_id` → drivers.id, `vehicle_id` → vehicles.id
-- **Fields:** 
-  - Location: pickup_latitude, pickup_longitude, dropoff_latitude, dropoff_longitude, pickup_address, dropoff_address
-  - Ride details: vehicle_type, is_shared, status (enum), estimated_distance, estimated_duration, estimated_fare, final_fare, surge_multiplier
-  - Timestamps: requested_at, accepted_at, started_at, completed_at, cancelled_at
-  - Other: special_instructions, cancelled_by, cancellation_reason
-- **RLS:** Passengers manage own rides; Drivers manage assigned rides
-
-#### **ride_locations**
-Real-time location tracking during rides.
-- **PK:** `id` (UUID)
-- **FK:** `ride_id` → rides.id
-- **Fields:** latitude, longitude, recorded_at
-- **RLS:** Drivers insert for assigned rides; Both parties view own ride locations
-
-#### **transactions**
-Payment and financial transactions.
-- **PK:** `id` (UUID)
-- **FK:** `ride_id` → rides.id, `user_id` → profiles.id
-- **Fields:** amount, payment_method (enum), payment_status (enum), tip_amount, commission_amount, driver_earnings, razorpay_order_id, razorpay_payment_id, razorpay_signature
-- **RLS:** Users view/create own transactions only
-
-#### **ratings**
-Post-ride ratings and feedback.
-- **PK:** `id` (UUID)
-- **FK:** `ride_id` → rides.id, `rated_by` → profiles.id, `rated_user` → profiles.id
-- **Fields:** rating (1-5), comment, feedback_categories (array)
-- **RLS:** Users create ratings; Both parties view ratings for own rides
-
-#### **pricing_config**
-Dynamic pricing configuration per vehicle type.
-- **PK:** `id` (UUID)
-- **Fields:** vehicle_type, base_fare, per_km_rate, per_minute_rate, minimum_fare, surge_multiplier_peak, surge_multiplier_night, commission_percentage, is_active
-- **RLS:** Public read for active pricing; Admin-only updates (to be implemented)
-
-### Database Functions
-
-#### **handle_new_user()**
-Trigger function that automatically creates profile and assigns passenger role when new user signs up.
-
-#### **has_role(user_id, role)**
-Security definer function to check user roles without RLS recursion issues.
-
-#### **update_updated_at_column()**
-Trigger function to automatically update `updated_at` timestamp.
-
----
-
-## API Design
-
-### Edge Functions
-
-#### **1. calculate-fare**
-**Path:** `/functions/v1/calculate-fare`
-
-**Purpose:** Calculate ride fare based on distance, duration, vehicle type, and dynamic surge pricing.
-
-**Request:**
-```json
-{
-  "vehicleType": "bike" | "auto" | "car",
-  "distance": 5.2,
-  "duration": 15,
-  "isShared": false,
-  "currentTime": "2024-01-15T18:30:00Z"
-}
-```
-
-**Response:**
-```json
-{
-  "baseFare": 50,
-  "distanceCharge": 52,
-  "timeCharge": 15,
-  "surgeMultiplier": 1.5,
-  "subtotal": 117,
-  "totalFare": 175.5,
-  "estimatedDriverEarnings": 140.4,
-  "commissionAmount": 35.1,
-  "commissionPercentage": 20
-}
-```
-
-**Logic:**
-- Fetches pricing config for vehicle type
-- Calculates base fare + (distance × per_km_rate) + (duration × per_minute_rate)
-- Applies surge multiplier based on time (peak hours: 1.5x, night: 1.3x)
-- Applies 50% discount for shared rides
-- Calculates commission and driver earnings
-
-#### **2. match-driver**
-**Path:** `/functions/v1/match-driver`
-
-**Purpose:** Find and match nearest available drivers based on location and vehicle type.
-
-**Request:**
-```json
-{
-  "vehicleType": "auto",
-  "pickupLatitude": 28.6139,
-  "pickupLongitude": 77.2090,
-  "isShared": false,
-  "searchRadius": 5
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "availableDrivers": [
-    {
-      "driverId": "uuid",
-      "driverUserId": "uuid",
-      "vehicleId": "uuid",
-      "driverName": "John Doe",
-      "phone": "+911234567890",
-      "vehicleModel": "Honda Activa",
-      "registrationNumber": "DL-01-AB-1234",
-      "rating": 4.5,
-      "totalRides": 234,
-      "distance": 1.2,
-      "latitude": 28.6145,
-      "longitude": 77.2095
-    }
-  ],
-  "totalCount": 5
-}
-```
-
-**Logic:**
-- Queries vehicles table with matching vehicle_type and is_active=true
-- Joins with drivers table filtering by is_online=true
-- Filters by shared preference if requested
-- Calculates distance using Haversine formula
-- Filters drivers within searchRadius (default 5km)
-- Sorts by distance (priority) then rating
-- Returns top 10 matches
-
-### Authentication API
-
-Uses Supabase Auth built-in endpoints:
-
-- **Sign Up:** `supabase.auth.signUp({ email, password, options })`
-- **Sign In:** `supabase.auth.signInWithPassword({ email, password })`
-- **Google OAuth:** `supabase.auth.signInWithOAuth({ provider: 'google' })`
-- **Sign Out:** `supabase.auth.signOut()`
-- **Get Session:** `supabase.auth.getSession()`
-- **Auth State Change:** `supabase.auth.onAuthStateChange(callback)`
-
----
-
-## User Flows
-
-### Passenger Journey
-
-#### 1. Registration & Onboarding
-
 ```mermaid
-graph TD
-    A[Start] --> B[Sign Up Screen]
-    B --> C{Choose Auth Method}
-    C -->|Email/Password| D[Enter Details]
-    C -->|Phone| E[Enter Phone Number]
-    C -->|Google| F[Google OAuth]
-    D --> G[OTP Verification]
-    E --> G
-    F --> H[Profile Setup]
-    G --> H
-    H --> I[Upload Photo]
-    I --> J[Add Payment Methods]
-    J --> K[Grant Permissions]
-    K --> L[Location Permission]
-    K --> M[Notification Permission]
-    L --> N[Dashboard]
-    M --> N
-```
+erDiagram
+    USERS {
+        uuid id PK
+        varchar mail UNIQUE
+        varchar name
+        varchar phone UNIQUE
+        varchar password_hash
+        varchar role
+        varchar avatar_url
+        timestamp verified_at
+        timestamp created_at
+        timestamp updated_at
+    }
 
-#### 2. Booking a Ride
+    DRIVERS {
+        uuid id PK
+        uuid user_id FK
+        boolean is_verified
+        boolean is_active
+        int total_rides
+        float rating
+        uuid active_vehicle_id FK
+    }
+
+    RIDERS {
+        uuid id PK
+        uuid user_id FK
+    }
+
+    DRIVER_LOCATION {
+        uuid id PK
+        uuid driver_id FK
+        float latitude
+        float longitude
+        timestamp updated_at
+    }
+
+    RIDER_LOCATION {
+        uuid id PK
+        uuid rider_id FK
+        float latitude
+        float longitude
+        timestamp updated_at
+    }
+
+    VEHICLES {
+        uuid id PK
+        uuid driver_id FK
+        varchar type
+        varchar model
+        varchar reg_num UNIQUE
+        int capacity
+        varchar color
+        int year
+        boolean is_active
+    }
+
+    RIDE_REQUESTS {
+        uuid id PK
+        uuid rider_id FK
+        float src_lat
+        float src_lng
+        float dest_lat
+        float dest_lng
+        boolean is_shared
+        float surge_mult
+        varchar status
+        timestamp requested_at
+        timestamp cancelled_at
+    }
+
+    RIDES {
+        uuid id PK
+        uuid ride_request_id FK
+        uuid driver_id FK
+        uuid rider_id FK
+        uuid vehicle_id FK
+        float amount
+        varchar status
+        float surge_mult
+        timestamp started_at
+        timestamp completed_at
+        timestamp cancelled_at
+    }
+
+    WALLET {
+        uuid id PK
+        uuid user_id FK
+        float balance
+        timestamp updated_at
+    }
+
+    TRANSACTIONS {
+        uuid id PK
+        uuid user_id FK
+        uuid ride_id FK
+        float amount
+        varchar transaction_type
+        varchar payment_method
+        varchar status
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    RATINGS {
+        uuid id PK
+        uuid ride_id FK
+        uuid rater_id FK
+        uuid ratee_id FK
+        float rating
+        varchar comments
+        timestamp created_at
+    }
+
+    %% Relationships
+    USERS ||--o{ DRIVERS : "has"
+    USERS ||--o{ RIDERS : "has"
+    USERS ||--o{ WALLET : "owns"
+    USERS ||--o{ TRANSACTIONS : "makes"
+    DRIVERS ||--o{ VEHICLES : "owns"
+    DRIVERS ||--o{ DRIVER_LOCATION : "updates"
+    RIDERS ||--o{ RIDER_LOCATION : "updates"
+    RIDERS ||--o{ RIDE_REQUESTS : "creates"
+    RIDE_REQUESTS ||--|| RIDES : "fulfilled_as"
+    VEHICLES ||--o{ RIDES : "used_in"
+    DRIVERS ||--o{ RIDES : "drives"
+    RIDERS ||--o{ RIDES : "books"
+    RIDES ||--o{ TRANSACTIONS : "generates"
+    RIDES ||--o{ RATINGS : "receives"
+    RATINGS }o--|| USERS : "rater"
+    RATINGS }o--|| USERS : "ratee"
+```
+## UserFlow
 
 ```mermaid
 graph TD
