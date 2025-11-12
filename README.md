@@ -68,7 +68,7 @@ erDiagram
         int capacity
         varchar color
         int year
-        boolean is_active
+        boolean status_active
     }
 
     RIDE_REQUESTS {
